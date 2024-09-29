@@ -20,20 +20,15 @@ class Http
     /** @var State */
     protected $state;
 
-    /** @var \Magento\Framework\App\Response\Http */
-    protected $response;
-
     /** @var Run */
     protected $run;
 
     public function __construct(
         State $state,
-        \Magento\Framework\App\Response\Http $response,
         Run $run,
         PrettyPageHandler $prettyPageHandler
     ) {
         $this->state = $state;
-        $this->response = $response;
         $this->run = $run;
 
         $this->run->pushHandler($prettyPageHandler);
@@ -47,15 +42,15 @@ class Http
     {
         register_shutdown_function([$this, 'handleShutdown']);
 
-        try {
-            return $proceed();
-        } catch (\Throwable $throwable) {
-            if ($this->state->getMode() === State::MODE_DEVELOPER) {
+        if ($this->state->getMode() === State::MODE_DEVELOPER) {
+            try {
+                return $proceed();
+            } catch (\Throwable $throwable) {
                 $this->run->handleException($throwable);
             }
         }
 
-        return $this->response;
+        return $proceed();
     }
 
     protected function handleShutdown()
