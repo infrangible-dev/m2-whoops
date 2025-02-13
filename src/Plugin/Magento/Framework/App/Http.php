@@ -74,7 +74,7 @@ class Http
                 } else {
                     $this->run->handleShutdown();
                 }
-            } else {
+            } elseif (Misc::isLevelFatal($error[ 'type' ])) {
                 echo 'An error has happened during application run. See PHP log for details.';
             }
         }
